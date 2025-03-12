@@ -1,0 +1,33 @@
+services:
+  mongodb:
+    container_name: mongo.back
+    hostname: mongo.back
+    image: mongo:latest
+    environment:
+      - MONGODB_DATABASE="db_orders"
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo:/data/db
+    networks:
+      rs-local-network:
+
+  redis:
+    container_name: redis.back
+    ports:
+    - 6379:6379
+    hostname: redis.back
+    image: redis:6.2.7
+    volumes:
+      - redis:/data
+    restart: on-failure
+    networks:
+      rs-local-network:
+
+volumes:
+  redis:
+  mongo:
+
+networks:
+  rs-local-network:
+   name: rs-local-network
