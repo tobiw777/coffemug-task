@@ -6,7 +6,7 @@ import { StringValue } from 'ms';
 import { Service } from 'typedi';
 
 @Service()
-export class jwtService {
+export class JwtService {
   private readonly jwtSecret = process.env.JWT_SECRET;
   private readonly jwtExpires = process.env.JWT_EXPIRE_TIME;
 

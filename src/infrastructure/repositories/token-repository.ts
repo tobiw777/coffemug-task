@@ -2,13 +2,14 @@ import { randomUUID } from 'crypto';
 
 import { IToken, TokenModel } from '@domain/entities/token';
 import { IUser } from '@domain/entities/user';
+import { Types } from 'mongoose';
 import { Service } from 'typedi';
 
 @Service()
 export class TokenRepository {
   private readonly tokenTTL = Number(process.env.REFRESH_TOKEN_TTL ?? 300) * 1000;
 
-  public async upsertToken(user: IUser): Promise<IToken> {
+  public async upsertToken(user: Pick<IUser, '_id'>): Promise<IToken> {
     const { refreshToken, ttl } = this._buildTokenAndTTL();
     const newToken = await TokenModel.findOneAndUpdate(
       {
@@ -28,8 +29,21 @@ export class TokenRepository {
     return newToken!;
   }
 
-  public async findRefreshToken(refreshToken: string): Promise<IToken | null> {
-    return TokenModel.findOne({ refreshToken });
+  public async findRefreshToken({
+    userId,
+    token,
+  }: {
+    userId?: Types.ObjectId;
+    token?: string;
+  }): Promise<IToken | null> {
+    return TokenModel.findOne({
+      ...(userId && {
+        user: userId,
+      }),
+      ...(token && {
+        refreshToken: token,
+      }),
+    });
   }
 
   public async updateToken(token: string): Promise<string> {

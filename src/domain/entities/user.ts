@@ -17,6 +17,8 @@ export interface IUser {
   updatedAt: Date;
 }
 
+export type TRegisterUserInput = Omit<IUser, 'createdAt' | 'updatedAt'>;
+
 export const UserModel = model<IUser>(
   'User',
   new Schema({

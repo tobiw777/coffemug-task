@@ -1,5 +1,5 @@
 import { IUser } from '@domain/entities/user';
-import { model, Schema } from 'mongoose';
+import { model, Schema, Types } from 'mongoose';
 
 export enum PAYMENT_STATUS {
   NOT_PAID = 'NOT_PAID',
@@ -13,7 +13,7 @@ export enum SHIPMENT_STATUS {
 }
 
 export interface IOrder {
-  _id: string;
+  _id: Types.ObjectId;
   totalPrice: Schema.Types.Decimal128;
   shipmentStatus: SHIPMENT_STATUS;
   paymentStatus: PAYMENT_STATUS;

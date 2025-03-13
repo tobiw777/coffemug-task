@@ -1,7 +1,7 @@
-import { model, Schema } from 'mongoose';
+import { model, Schema, Types } from 'mongoose';
 
 export interface IProduct {
-  _id: string;
+  _id: Types.ObjectId;
   name: string;
   description: string;
   price: Schema.Types.Decimal128;
