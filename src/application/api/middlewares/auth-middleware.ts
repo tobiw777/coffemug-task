@@ -23,7 +23,7 @@ export class AuthMiddleware implements ExpressMiddlewareInterface {
       const authToken = this.jwtService.verify(token);
 
       request.identity = {
-        id: authToken.userId,
+        userId: authToken.userId,
       };
 
       next();

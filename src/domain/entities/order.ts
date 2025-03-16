@@ -18,10 +18,13 @@ export interface IOrder {
   shipmentStatus: SHIPMENT_STATUS;
   paymentStatus: PAYMENT_STATUS;
   user: IUser;
+  createdAt: Date;
 }
 
+export type ICreateOrderInput = Pick<IOrder, '_id' | 'totalPrice'> & Pick<IUser, '_id'>;
+
 export const OrderModel = model<IOrder>(
-  'OrderModel',
+  'Order',
   new Schema({
     totalPrice: {
       type: Schema.Types.Decimal128,
@@ -38,6 +41,10 @@ export const OrderModel = model<IOrder>(
       enum: [PAYMENT_STATUS.NOT_PAID, PAYMENT_STATUS.PAID],
       required: true,
       default: PAYMENT_STATUS.NOT_PAID,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now(),
     },
     user: {
       type: Schema.Types.ObjectId,

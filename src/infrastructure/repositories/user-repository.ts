@@ -30,4 +30,8 @@ export class UserRepository {
       throw error;
     }
   }
+
+  public async findUserById(id: string): Promise<IUser | null> {
+    return UserModel.findById(id).exec();
+  }
 }

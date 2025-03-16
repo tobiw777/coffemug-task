@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { httpLogger, logger } from '@src/utils/logger';
-import mongoose from 'mongoose';
+import mongoose, { Mongoose } from 'mongoose';
 import { createExpressServer, useContainer } from 'routing-controllers';
 import { Container } from 'typedi';
 
@@ -9,22 +9,35 @@ import 'dotenv/config';
 
 import * as process from 'node:process';
 
-import { ProductController } from '@application/api/controllers/product/dto/product-controller';
-import { UserController } from '@application/api/controllers/user/user-controller';
 import { ErrorMiddleware } from '@application/api/middlewares/error-middleware';
+import Redis from 'ioredis';
 
 useContainer(Container);
 (async () => {
-  const mongooseInstance = await mongoose.connect(
+  const mongooseInstance: Mongoose = await mongoose.connect(
     `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
     {
       connectTimeoutMS: 10000,
+      replicaSet: 'RS',
     },
   );
+
+  const redisClient = new Redis({
+    host: process.env.REDIS_HOST,
+    port: +process.env.REDIS_PORT!,
+  });
+
+  Container.set('redis', redisClient);
   Container.set('mongoose', mongooseInstance);
 
+  const [{ OrderController }, { ProductController }, { UserController }] = await Promise.all([
+    import('@application/api/controllers/order/order-controller.js'),
+    import('@application/api/controllers/product/product-controller.js'),
+    import('@application/api/controllers/user/user-controller.js'),
+  ]);
+
   const app = createExpressServer({
-    controllers: [UserController, ProductController],
+    controllers: [UserController, ProductController, OrderController],
     middlewares: [httpLogger, ErrorMiddleware],
     routePrefix: '/api',
     defaultErrorHandler: false,

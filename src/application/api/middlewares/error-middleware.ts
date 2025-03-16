@@ -3,6 +3,18 @@ import { logger } from '@src/utils/logger';
 import { BadRequestError, ExpressErrorMiddlewareInterface, HttpError, Middleware } from 'routing-controllers';
 import { Service } from 'typedi';
 
+export const badRequestToValidationMessages = (errors: Array<any>): any =>
+  errors.reduce(
+    (obj, error) =>
+      Object.assign(obj, {
+        [error.property]:
+          error.children && error.children.length > 0
+            ? badRequestToValidationMessages(error.children)
+            : error.constraints,
+      }),
+    {},
+  );
+
 @Middleware({
   type: 'after',
 })
@@ -11,9 +23,10 @@ export class ErrorMiddleware implements ExpressErrorMiddlewareInterface {
   public error(error: any, request: any, response: any, next: (err?: any) => any) {
     let errorToSend: RestError;
     if (error instanceof BadRequestError) {
-      const errorDetails = (<any>error).errors || [];
+      const errorDetails = (<any>error).errors;
+      const errors = badRequestToValidationMessages(errorDetails);
       errorToSend = new RestError(error.httpCode, 'Invalid payload provided');
-      errorToSend.errors = errorDetails.map(({ constraints = {} }) => constraints);
+      errorToSend.errors = errors;
     } else if (error instanceof HttpError || error instanceof RestError) {
       errorToSend = error;
     } else {
