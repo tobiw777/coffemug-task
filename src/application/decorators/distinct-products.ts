@@ -9,6 +9,9 @@ export const IsDistinctProductsArray = () => (object: object, propertyName: stri
     constraints: [],
     validator: {
       validate(value: { product_id: string; quantity: number }[] = []): boolean {
+        if (!Array.isArray(value)) {
+          return false;
+        }
         const productsSet = new Set(value.map(({ product_id }) => product_id));
 
         return productsSet.size === value.length;

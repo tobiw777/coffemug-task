@@ -7,20 +7,20 @@ import { Container } from 'typedi';
 
 import 'dotenv/config';
 
-import * as process from 'node:process';
+import process from 'node:process';
 
 import { ErrorMiddleware } from '@application/api/middlewares/error-middleware';
 import Redis from 'ioredis';
 
-useContainer(Container);
 (async () => {
-  const mongooseInstance: Mongoose = await mongoose.connect(
-    `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
-    {
-      connectTimeoutMS: 10000,
-      replicaSet: 'RS',
-    },
-  );
+  useContainer(Container);
+
+  const dbName = process.env.ENV_MODE === 'test' ? process.env.DB_NAME_TEST : process.env.DB_NAME;
+  const mongooseInstance: Mongoose = await mongoose.connect(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}`, {
+    dbName,
+    connectTimeoutMS: 10000,
+    replicaSet: 'RS',
+  });
 
   const redisClient = new Redis({
     host: process.env.REDIS_HOST,

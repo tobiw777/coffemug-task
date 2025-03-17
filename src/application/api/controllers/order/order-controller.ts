@@ -56,7 +56,7 @@ export class OrderController {
     const user = await this.queryBus.execute(FindUserByIdQuery, { id: userId });
 
     if (!user) {
-      throw new RestError(StatusCodes.NOT_FOUND, 'Not Found', `User with id: {${userId}} not found`);
+      throw new RestError(StatusCodes.NOT_FOUND, 'Not Found', `User with id: ${userId} not found`);
     }
 
     try {
