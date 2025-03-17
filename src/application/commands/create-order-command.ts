@@ -30,7 +30,7 @@ export class CreateOrderCommand implements CommandInterface<ICreateOrderCommandP
       return {
         result: CommandQueryResult.FAILED,
         error: {
-          title: 'Could create order',
+          title: 'Could not create order',
           message,
           statusCode: StatusCodes.FAILED_DEPENDENCY,
         },

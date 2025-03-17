@@ -114,7 +114,9 @@ export const buildOrder = (
   const blackFridayDiscountedPrice = isBlackFridayDiscountPossible
     ? reducedProductOrder.baseTotalPrice * 0.75
     : reducedProductOrder.baseTotalPrice;
-  const finalPrice = [volumeBasedDiscountedPrice, blackFridayDiscountedPrice, holidayDiscountedPrice].toSorted()[0]!;
+  const finalPrice = [volumeBasedDiscountedPrice, blackFridayDiscountedPrice, holidayDiscountedPrice].toSorted(
+    (a, b) => a - b,
+  )[0]!;
 
   return {
     orderTotalPrice: finalPrice,
