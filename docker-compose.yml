@@ -1,7 +1,8 @@
 services:
   mongodb:
     container_name: mongo.back
-    hostname: mongo.back
+    hostname: mongodb
+    command: --replSet=RS
     image: mongo:latest
     environment:
       - MONGODB_DATABASE="db_orders"
@@ -11,6 +12,23 @@ services:
       - mongo:/data/db
     networks:
       rs-local-network:
+
+  mongo-init:
+    image: mongo:latest
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+    networks:
+      rs-local-network:
+    command: >
+      sh -c "sleep 5; mongosh --host mongodb:27017 --eval '
+      rs.initiate( {
+         _id : \"RS\",
+         members: [
+           { _id: 0, host: \"localhost:27017\" }
+         ]
+       })
+      '"
 
   redis:
     container_name: redis.back
